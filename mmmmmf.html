@@ -518,8 +518,14 @@ function render(){
   document.getElementById('month-label').textContent=MN[vM]+' '+vY;
   const grid=document.getElementById('days-grid');
   grid.innerHTML='';
-  // Calcular día de la semana del 1ro del mes sin depender del timezone
-  // Algoritmo de Tomohiko Sakamoto — devuelve 0=Dom,1=Lun...6=Sáb
+  // Días en el mes — sin usar Date() del dispositivo
+  function daysInMonth(y, m){
+    const days=[31,28,31,30,31,30,31,31,30,31,30,31];
+    if(m===2 && ((y%4===0&&y%100!==0)||y%400===0)) return 29;
+    return days[m-1];
+  }
+  // Día de la semana del día 1 — algoritmo puro sin timezone
+  // Zeller simplificado — devuelve 0=Dom,1=Lun...6=Sáb
   function getDayOfWeek(y, m, d){
     const t=[0,3,2,5,0,3,5,1,4,6,2,4];
     if(m<3)y--;
@@ -527,7 +533,7 @@ function render(){
   }
   const rawDay = getDayOfWeek(vY, vM+1, 1); // 0=Dom,1=Lun...6=Sáb
   const fd = (rawDay===0)?6:rawDay-1; // convertir a 0=Lun...6=Dom
-  const dim=new Date(vY,vM+1,0).getDate();
+  const dim = daysInMonth(vY, vM+1);
   const ecNow=getEcuadorNow();
   const todayKey=getEcuadorDateKey(ecNow);
 
